@@ -1288,31 +1288,31 @@ pub trait QueryBuilder:
             #[cfg(feature = "with-chrono")]
             Value::ChronoTime(Some(v)) => {
                 buf.write_str("'")?;
-                write!(buf, "{}", v.format("%H:%M:%S%.6f"))?;
+                write!(buf, "{}", v.format("%H:%M:%S%.f"))?;
                 buf.write_str("'")?;
             }
             #[cfg(feature = "with-chrono")]
             Value::ChronoDateTime(Some(v)) => {
                 buf.write_str("'")?;
-                write!(buf, "{}", v.format("%Y-%m-%d %H:%M:%S%.6f"))?;
+                write!(buf, "{}", v.format("%Y-%m-%d %H:%M:%S%.f"))?;
                 buf.write_str("'")?;
             }
             #[cfg(feature = "with-chrono")]
             Value::ChronoDateTimeUtc(Some(v)) => {
                 buf.write_str("'")?;
-                write!(buf, "{}", v.format("%Y-%m-%d %H:%M:%S%.6f %:z"))?;
+                write!(buf, "{}", v.format("%Y-%m-%d %H:%M:%S%.f %:z"))?;
                 buf.write_str("'")?;
             }
             #[cfg(feature = "with-chrono")]
             Value::ChronoDateTimeLocal(Some(v)) => {
                 buf.write_str("'")?;
-                write!(buf, "{}", v.format("%Y-%m-%d %H:%M:%S%.6f %:z"))?;
+                write!(buf, "{}", v.format("%Y-%m-%d %H:%M:%S%.f %:z"))?;
                 buf.write_str("'")?;
             }
             #[cfg(feature = "with-chrono")]
             Value::ChronoDateTimeWithTimeZone(Some(v)) => {
                 buf.write_str("'")?;
-                write!(buf, "{}", v.format("%Y-%m-%d %H:%M:%S%.6f %:z"))?;
+                write!(buf, "{}", v.format("%Y-%m-%d %H:%M:%S%.f %:z"))?;
                 buf.write_str("'")?;
             }
             #[cfg(feature = "with-time")]

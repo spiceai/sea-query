@@ -2590,3 +2590,53 @@ fn test_pgvector_select() {
         r#"SELECT "character" FROM "character" WHERE "character" = '[1,2]'"#
     );
 }
+
+#[test]
+#[cfg(feature = "with-chrono")]
+fn chrono_fractional_seconds() {
+    use chrono::{DateTime, Local, Utc};
+
+    // `QueryBuilder` is not dyn-compatible, so each backend is asserted through a
+    // closure over its concrete builder rather than a `&dyn` loop.
+    fn assert_for<B: QueryBuilder>(builder: &B, fraction: &str, offset: &str) {
+        let value =
+            DateTime::parse_from_rfc3339(&format!("2026-01-02T03:04:05{fraction}{offset}")).unwrap();
+        let fixed: Value = value.into();
+        let naive: Value = value.naive_local().into();
+        let time: Value = value.time().into();
+        let utc: Value = value.with_timezone(&Utc).into();
+        let local: Value = value.with_timezone(&Local).into();
+
+        assert_eq!(
+            builder.value_to_string(&fixed),
+            format!("'2026-01-02 03:04:05{fraction} {offset}'")
+        );
+        assert_eq!(
+            builder.value_to_string(&time),
+            format!("'03:04:05{fraction}'")
+        );
+        assert_eq!(
+            builder.value_to_string(&naive),
+            format!("'2026-01-02 03:04:05{fraction}'")
+        );
+        for zoned in [&utc, &local] {
+            let literal = builder.value_to_string(zoned);
+            let parsed =
+                DateTime::parse_from_str(literal.trim_matches('\''), "%Y-%m-%d %H:%M:%S%.f %:z")
+                    .unwrap();
+            assert_eq!(parsed, value);
+        }
+        assert_eq!(
+            builder.value_to_string(&Value::ChronoDateTime(None)),
+            "NULL"
+        );
+    }
+
+    for fraction in ["", ".123", ".000001", ".123400", ".123456", ".123456789"] {
+        for offset in ["+00:00", "+09:00", "-07:00"] {
+            assert_for(&PostgresQueryBuilder, fraction, offset);
+            assert_for(&MysqlQueryBuilder, fraction, offset);
+            assert_for(&SqliteQueryBuilder, fraction, offset);
+        }
+    }
+}
