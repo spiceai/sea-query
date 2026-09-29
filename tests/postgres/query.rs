@@ -1437,7 +1437,7 @@ fn insert_4() {
                 .unwrap()
                 .into()])
             .to_string(PostgresQueryBuilder),
-        "INSERT INTO \"glyph\" (\"image\") VALUES ('1970-01-01 00:00:00.000000')"
+        "INSERT INTO \"glyph\" (\"image\") VALUES ('1970-01-01 00:00:00')"
     );
 }
 
