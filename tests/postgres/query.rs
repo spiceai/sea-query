@@ -2599,8 +2599,8 @@ fn chrono_fractional_seconds() {
     // `QueryBuilder` is not dyn-compatible, so each backend is asserted through a
     // closure over its concrete builder rather than a `&dyn` loop.
     fn assert_for<B: QueryBuilder>(builder: &B, fraction: &str, offset: &str) {
-        let value =
-            DateTime::parse_from_rfc3339(&format!("2026-01-02T03:04:05{fraction}{offset}")).unwrap();
+        let value = DateTime::parse_from_rfc3339(&format!("2026-01-02T03:04:05{fraction}{offset}"))
+            .unwrap();
         let fixed: Value = value.into();
         let naive: Value = value.naive_local().into();
         let time: Value = value.time().into();
